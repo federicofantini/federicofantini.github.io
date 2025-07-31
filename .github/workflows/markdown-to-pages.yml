@@ -1,0 +1,35 @@
+name: Update Pages from README
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: federicofantini/federicofantini
+          path: profile
+
+      - name: Clone Pages repo
+        uses: actions/checkout@v4
+        with:
+          repository: federicofantini/federicofantini.github.io
+          path: pages
+
+      - name: Copy README as index.md
+        run: |
+          cp profile/README.md pages/index.md
+
+      - name: Commit & push if changes
+        run: |
+          cd pages
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add index.md
+          git commit -m "Update index from README" || echo "No changes"
+          git push
+
